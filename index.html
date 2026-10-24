@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dither Lab · Y2K Collage Edition</title>
+<style>
+:root{color-scheme:dark;--bg:#0c1010;--panel:#151c1b;--panel2:#1d2725;--line:#2d3a36;--text:#edf5ef;--muted:#9aaca4;--accent:#b7f36b;--accent2:#7dd3b0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#17221e 0,#0c1010 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:22px clamp(16px,4vw,42px) 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:42px;height:42px;border-radius:12px;background:var(--accent);color:#14200d;display:grid;place-items:center;font-size:24px;font-weight:900;letter-spacing:-4px;padding-right:4px}
+h1{font-size:22px;margin:0;letter-spacing:-.7px}header p{margin:3px 0 0;color:var(--muted);font-size:13px}.tag{border:1px solid #425348;border-radius:999px;padding:7px 11px;color:var(--accent);font-size:12px;white-space:nowrap}
+main{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);gap:18px;padding:18px clamp(12px,3vw,32px) 28px;max-width:1600px;margin:auto}
+aside{display:flex;flex-direction:column;gap:12px}.panel{background:linear-gradient(145deg,#18201e,#121817);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);margin:0 0 13px}
+.upload{border:1px dashed #5c7566;border-radius:12px;padding:18px 12px;text-align:center;background:#111815;cursor:pointer;display:block}.upload:hover{border-color:var(--accent);background:#18221a}.upload strong{display:block;margin:7px 0 3px}.upload small{color:var(--muted)}input[type=file]{display:none}
+label{display:block;color:#c7d5cd;font-size:12px;margin:12px 0 6px}.control-row{display:flex;justify-content:space-between;gap:10px;align-items:center}.value{color:var(--accent);font-variant-numeric:tabular-nums;font-size:12px}
+input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0}
+select,input[type=text],textarea{width:100%;background:#0e1412;border:1px solid #34443c;border-radius:9px;color:var(--text);padding:10px;font:inherit;outline:none}select:focus,input:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:68px;font-family:ui-monospace,SFMono-Regular,monospace}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #3a4a40;border-radius:10px;background:#202a25;color:var(--text);padding:10px 12px;font-weight:650;cursor:pointer}.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--accent);color:#16210f;border-color:var(--accent)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.check{display:flex;gap:8px;align-items:center;font-size:12px;color:#c4d0c9}.check input{accent-color:var(--accent)}
+.workspace{min-width:0;display:flex;flex-direction:column;gap:12px}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.tabs{display:flex;gap:5px;background:#111715;border:1px solid var(--line);padding:4px;border-radius:11px}.tab{border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}.tab.active{background:#2b3a30;color:var(--accent)}
+.stage{position:relative;min-height:400px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:16px;background-color:#111715;background-image:linear-gradient(45deg,#19211e 25%,transparent 25%),linear-gradient(-45deg,#19211e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#19211e 75%),linear-gradient(-45deg,transparent 75%,#19211e 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
+canvas{max-width:100%;max-height:72vh;object-fit:contain;display:block}.empty{text-align:center;padding:40px 18px;color:var(--muted);max-width:440px}.empty .big{font-size:48px;color:#51665a}.empty strong{display:block;color:var(--text);font-size:18px;margin:12px 0 5px}.status{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ascii-wrap{display:none;overflow:auto;max-height:72vh;width:100%;padding:12px}.ascii-wrap pre{font:5px/5px ui-monospace,SFMono-Regular,monospace;white-space:pre;margin:auto;width:max-content;color:#e6f4e8}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:0 15px 24px}
+@media(max-width:850px){main{grid-template-columns:1fr}.workspace{order:-1}.stage{min-height:300px}.stage canvas{max-height:60vh}aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.panel:first-child{grid-column:1/-1}}
+@media(max-width:520px){aside{display:flex}.stage{min-height:260px}.toolbar .btnrow{width:100%}.toolbar .btnrow .btn{flex:1}}
+
+/* Silver 2000s car-stereo skin */
+:root{color-scheme:light;--bg:#aeb6bc;--panel:#d9dfe3;--panel2:#c5cdd2;--line:#8c979e;--text:#20282d;--muted:#56636b;--accent:#2d6848;--accent2:#285d40}
+body{background:linear-gradient(135deg,#7c878e,#d9dfe3 22%,#9ca7ae 48%,#e7ecef 68%,#89959c);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+header{background:linear-gradient(180deg,#f5f7f8 0%,#cbd2d7 42%,#9da7ad 49%,#e5e9ec 100%);border-bottom:2px solid #77838b;box-shadow:0 3px 12px #28323a55,inset 0 1px #fff;padding-top:18px;padding-bottom:16px}
+.brand{gap:14px}.mark{background:linear-gradient(145deg,#f7f9fa,#8b969d);border:2px solid #7c878e;box-shadow:inset 0 1px #fff,0 2px 3px #5a6268;color:#234632;border-radius:9px;letter-spacing:-3px}
+h1{font-family:Tahoma,Arial,sans-serif;letter-spacing:1px;text-shadow:0 1px #fff;font-size:21px}header p{color:#3e4b52}.tag{background:linear-gradient(#edf1f3,#aeb8be);border:1px solid #7c898f;color:#214a35;box-shadow:inset 0 1px #fff,0 1px 2px #5b646a;font-weight:bold}
+main{max-width:1700px}.panel{background:linear-gradient(145deg,#e7ecef 0%,#cbd2d7 44%,#dfe4e7 100%);border:1px solid #7e8a91;border-radius:10px;box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 #a0a9ae,0 3px 6px #303a4050;padding:15px}
+.panel h2{color:#234e38;border-bottom:1px solid #a2adb3;padding-bottom:8px;text-shadow:0 1px #fff;letter-spacing:1.4px}
+label{color:#35434b}.value{color:#24563b;font-weight:bold}.upload{background:linear-gradient(#f1f4f5,#b9c3c9);border:1px dashed #64747c;box-shadow:inset 0 1px #fff}.upload:hover{background:linear-gradient(#fff,#cad4d9);border-color:#315c44}.upload small{color:#46545b}
+select,input[type=text],textarea{background:linear-gradient(#f7f9fa,#d0d8dc);border:1px solid #849199;border-radius:5px;color:#202a2f;box-shadow:inset 0 1px 3px #64717a33}select:focus,input:focus,textarea:focus{border-color:#2e6548}input[type=range]{accent-color:#3d7454}
+.btn{background:linear-gradient(180deg,#fafbfc 0%,#d3d9dd 48%,#aeb8be 50%,#e1e5e8 100%);border:1px solid #7c878e;border-radius:6px;color:#263238;text-shadow:0 1px #fff;box-shadow:inset 0 1px 0 #fff,0 2px 2px #46515944;padding:9px 11px}.btn:hover{border-color:#3c6b50;filter:brightness(1.04)}.btn.primary{background:linear-gradient(180deg,#d8f4df,#79ae8b 48%,#39724e 50%,#a8d4b4);color:#122b1b;border-color:#4d785a;text-shadow:0 1px #d8f0df}.check{color:#35434b}.tabs{background:linear-gradient(#b3bdc3,#e2e7ea);border-color:#8c979e;border-radius:7px}.tab{color:#47555d}.tab.active{background:linear-gradient(#2e513d,#1b3928);color:#d7ffdf;box-shadow:inset 0 1px #63876f}
+.stage{border:3px solid #7e898f;border-radius:8px;background-color:#06110b;background-image:linear-gradient(45deg,#102018 25%,transparent 25%),linear-gradient(-45deg,#102018 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#102018 75%),linear-gradient(-45deg,transparent 75%,#102018 75%);box-shadow:inset 0 0 0 2px #dce1e4,inset 0 0 22px #0009,0 2px 5px #4e585e66}.stage canvas{filter:drop-shadow(0 0 2px #7dff9b55)}.empty{color:#9bb8a4}.empty strong{color:#e3ffe9}.empty .big{color:#7bff9b}footer{color:#3f4d54}
+#animPanel{background:linear-gradient(135deg,#e7ecef,#adb8be 45%,#dfe5e8);border:2px solid #7e898f}#animPanel .stage{border-color:#4d5b55}
+input[type=color]{cursor:pointer;box-shadow:inset 0 1px #fff,0 1px 2px #56616a55}
+@media(max-width:520px){header{padding:14px}.panel{padding:12px}h1{font-size:17px}}
+
+
+/* Pure Y2K collage skin: retro desktop, stickers, chrome and pop colors */
+:root{color-scheme:light;--accent:#ff4fc8;--accent2:#26d9ff;--line:#202b88;--panel:#e5e3dc;--text:#171727;--muted:#4d4b60}
+body{background:#d8d8d2;background-image:radial-gradient(circle at 7% 10%,#ffdc32 0 34px,transparent 35px),radial-gradient(circle at 95% 21%,#ff4fc8 0 45px,transparent 46px),radial-gradient(circle at 6% 83%,#27d9ff 0 52px,transparent 53px),linear-gradient(135deg,#b5b9bb,#efeee7 28%,#bfc3c8 54%,#f8d7eb 77%,#c6eaf0);background-attachment:fixed;color:var(--text);font-family:Tahoma,Arial,sans-serif}
+header{position:relative;background:linear-gradient(110deg,#f8f7ef,#d2d2ce 40%,#fff 41%,#b9c1c9 75%,#f5d7e9);border:2px solid;border-color:#fff #777b87 #777b87 #fff;box-shadow:4px 5px 0 #202b88,8px 9px 0 #ff4fc8;padding-top:18px;padding-bottom:16px;transform:rotate(-.25deg)}
+header:after{content:'★ DIGITAL DREAMS ★  Y2K';position:absolute;right:22px;bottom:-22px;padding:4px 9px;background:#ff4fc8;color:#171727;border:2px solid #202b88;font:900 10px/1.4 Tahoma,Arial,sans-serif;letter-spacing:1px;transform:rotate(2deg);box-shadow:3px 3px 0 #f8e64c}
+.brand{gap:14px}.mark{border-radius:50%;background:linear-gradient(135deg,#ffec65,#ff4fc8 55%,#27d9ff);border:2px solid #202b88;box-shadow:3px 3px 0 #202b88;color:#202b88;letter-spacing:-3px}
+h1{font-family:Tahoma,Arial,sans-serif;text-transform:uppercase;letter-spacing:1.5px;color:#202b88;text-shadow:2px 2px 0 #fff,4px 4px 0 #ff4fc8;font-size:23px}header p{color:#45445b}.tag{border-radius:2px;background:#f8e64c;color:#202b88;border:2px solid #202b88;box-shadow:3px 3px 0 #ff4fc8;font-weight:900;transform:rotate(1deg)}
+main{padding-top:34px}
+.panel{position:relative;border-radius:2px;background:linear-gradient(135deg,#f5f3ec,#d1d1cf 45%,#f9f6ed);border:2px solid;border-color:#fff #727582 #727582 #fff;box-shadow:4px 4px 0 #202b88,7px 7px 0 #ff4fc8,inset 0 0 0 1px #b4b9bb;padding-top:19px}
+.panel:nth-child(2n){box-shadow:4px 4px 0 #ff4fc8,7px 7px 0 #27cbe9}
+.panel h2{margin:-9px -9px 14px;padding:7px 10px;background:linear-gradient(90deg,#172e9a,#3154c4 58%,#8a37ad);color:#fff;border:1px solid;border-color:#a6b7ff #172778 #172778 #a6b7ff;text-shadow:1px 1px #18205e;font:700 12px/1.2 Tahoma,Arial,sans-serif;letter-spacing:1px;text-transform:uppercase}
+.upload{border-radius:2px;background:repeating-linear-gradient(135deg,#f4f3ed 0 8px,#e6e7e4 8px 16px);border:2px dashed #ff4fc8;box-shadow:inset 0 1px #fff;color:#17191d}.upload:hover{border-color:#202b88;background:#fff2fb}
+select,input[type=text],textarea{border-radius:0;background:#f7f6f0;border:2px inset #c9ccca;box-shadow:none;color:#111;font-family:'Courier New',monospace}
+.btn{border-radius:0;background:linear-gradient(180deg,#fff 0%,#e4e3df 48%,#c4c5c5 50%,#f5f3ed 100%);border:2px outset #f8f8f5;box-shadow:2px 3px 0 #202b88;color:#18204b;text-shadow:1px 1px #fff;font-family:Tahoma,Arial,sans-serif}.btn:hover{border-color:#ff4fc8;filter:saturate(1.2)}
+.btn:active{border-style:inset;transform:translate(2px,2px);box-shadow:none}.btn.primary{background:linear-gradient(180deg,#ffec65,#ff8cd9 48%,#ff4fc8 50%,#ffb2e7);color:#20205a;text-shadow:1px 1px #fff;border-color:#fff #8a2d85 #8a2d85 #fff}
+.tabs{border-radius:0;background:linear-gradient(#b7bdc0,#f0eee8);border:2px outset #f5f5f5}.tab{border-radius:0;font-family:Tahoma,Arial,sans-serif}.tab.active{background:linear-gradient(90deg,#172e9a,#3154c4);color:white;box-shadow:inset 1px 1px #a6b7ff}
+.stage{border-radius:0;border:4px ridge #bfc4c6;box-shadow:inset 0 0 0 2px #f0f0ec,4px 4px 0 #202b88,7px 7px 0 #27cbe9;position:relative}
+#animPanel{border-radius:2px;background:linear-gradient(135deg,#f5f3ec,#d1d1cf 45%,#f9f6ed);border:2px outset #f5f5f5}#animPanel .stage{border:4px ridge #bfc4c6}
+.value{color:#202b88}.panel h2:before{content:'✦  ';color:#ffec65}footer{padding-top:10px;color:#34334c;text-shadow:0 1px #fff}
+@media(max-width:520px){header:after{right:10px;bottom:-19px;font-size:8px}main{padding-top:29px}h1{font-size:18px}}
+
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="mark">◖▤◗</div><div><h1>DITHER LAB <span style="color:#ff4fc8">Y2K COLLAGE</span></h1><p>Y2K collage · retro desktop · chrome stickers · character matrix</p></div></div><span class="tag">DIGITAL DREAMS · 2000s · GLITCH ART</span></header>
+<main>
+<aside>
+<section class="panel">
+<h2>01 / Bildquelle</h2>
+<label class="upload" for="file"><span style="font-size:27px">↥</span><strong>Foto hochladen</strong><small>JPG, PNG, WebP · bleibt auf deinem Gerät</small></label><input id="file" type="file" accept="image/*">
+<div class="btnrow" style="margin-top:10px"><button class="btn" id="reset">Zurücksetzen</button><button class="btn" id="sample">Demo laden</button></div>
+<label for="mode">Dither-Verfahren</label><select id="mode">
+<option value="floyd">Floyd–Steinberg</option><option value="atkinson">Atkinson</option><option value="ordered">Bayer / Ordered 8×8</option><option value="halftone">Halftone / Punkte</option><option value="chars">Zeichen-Dither</option><option value="ascii">ASCII-Art</option><option value="threshold">Schwarz-Weiß-Schwelle</option><option value="poster">Posterize / Farbstufen</option><option value="none">Nur Bildanpassung</option>
+</select>
+<label for="palette">Farbmodus</label><select id="palette"><option value="mono">Monochrom</option><option value="green">Terminal-Grün</option><option value="amber">Amber-Terminal</option><option value="cyan">Cyber-Cyan</option><option value="color">Originalfarben</option><option value="duo">Zweifarb-Druck</option></select>
+</section>
+<section class="panel">
+<h2>02 / Dither-Regler</h2>
+<div class="control-row"><label for="scale">Pixelgröße</label><span class="value" id="scaleV">5 px</span></div><input id="scale" type="range" min="1" max="18" value="5">
+<div class="control-row"><label for="strength">Dither-Stärke</label><span class="value" id="strengthV">100%</span></div><input id="strength" type="range" min="0" max="100" value="100">
+<div class="control-row"><label for="threshold">Schwellenwert</label><span class="value" id="thresholdV">128</span></div><input id="threshold" type="range" min="0" max="255" value="128">
+<div class="control-row"><label for="contrast">Kontrast</label><span class="value" id="contrastV">100%</span></div><input id="contrast" type="range" min="50" max="180" value="100">
+<div class="control-row"><label for="brightness">Helligkeit</label><span class="value" id="brightnessV">0</span></div><input id="brightness" type="range" min="-80" max="80" value="0">
+<div class="control-row"><label for="levels">Farbstufen</label><span class="value" id="levelsV">4</span></div><input id="levels" type="range" min="2" max="12" value="4">
+<div class="checks"><label class="check"><input id="invert" type="checkbox"> Invertieren</label><label class="check"><input id="edge" type="checkbox"> Kanten betonen</label></div>
+</section>
+<section class="panel">
+<h2>03 / Eigene Zeichen</h2>
+<label for="chars">Zeichenfolge · dunkel → hell</label><textarea id="chars" spellcheck="false">@%#*+=-:. </textarea>
+<div class="btnrow" style="margin-top:8px"><button class="btn" id="presetAscii">ASCII</button><button class="btn" id="presetBlocks">Blöcke</button><button class="btn" id="presetSymbols">Symbole</button></div>
+<label for="charColor">Zeichenfarbe</label><select id="charColor"><option value="palette">Aus Farbmodus</option><option value="white">Weiß</option><option value="green">Grün</option><option value="amber">Amber</option><option value="cyan">Cyan</option><option value="rainbow">Bunt nach Helligkeit</option></select>
+</section>
+
+<section class="panel">
+<h2>05 / Bewegte Zeichen</h2>
+<label for="animEffect">Animationseffekt</label>
+<select id="animEffect">
+<option value="matrix">Matrix-Regen</option>
+<option value="glyphwave">Zeichen-Welle</option>
+<option value="glitch">Digitaler Glitch</option>
+<option value="scan">Retro-Scanlines</option>
+<option value="pulse">Dither-Puls</option>
+<option value="asciiRain">ASCII-Regen</option>
+<option value="invert">Negativ-Flackern</option>
+<option value="spiral">Spiral-Sog</option>
+<option value="orbit">Orbit / Umlauf</option>
+<option value="fire">Digitales Feuer</option>
+<option value="rainbow">Regenbogen-Welle</option>
+<option value="mirror">Spiegel-Tanz</option>
+<option value="typing">Terminal-Tippen</option>
+<option value="zoom">Zoom-Pump</option>
+<option value="ripple">Wasserwelle</option>
+<option value="scroll">Zeilen-Scroll</option>
+<option value="particles">Zeichen-Partikel</option>
+<option value="equalizer">ASCII-Equalizer</option>
+</select>
+<div class="control-row"><label for="animSpeed">Geschwindigkeit</label><span class="value" id="animSpeedV">1.0×</span></div><input id="animSpeed" type="range" min="1" max="10" value="5">
+<div class="control-row"><label for="animFrames">GIF-Länge</label><span class="value" id="animFramesV">3 s</span></div><input id="animFrames" type="range" min="1" max="6" value="3">
+<div class="control-row"><label for="animDensity">Zeichendichte</label><span class="value" id="animDensityV">Fein</span></div><input id="animDensity" type="range" min="1" max="10" value="7">
+
+<label for="symbolPattern">Symbolmuster</label>
+<select id="symbolPattern">
+<option value="brightness">Nach Bildhelligkeit</option>
+<option value="reverse">Umgekehrte Reihenfolge</option>
+<option value="checker">Schachbrett-Muster</option>
+<option value="stripes">Streifen</option>
+<option value="random">Zufällig, animiert</option>
+<option value="blocks">Blockzeichen bevorzugen</option>
+<option value="alternate">Abwechselnd</option>
+</select>
+<label for="animPalette">Farbpalette</label>
+<select id="animPalette">
+<option value="matrix">Matrix-Grün</option>
+<option value="mono">Schwarz-Weiß</option>
+<option value="fire">Feuer</option>
+<option value="ice">Eisblau</option>
+<option value="cyber">Cyberpunk</option>
+<option value="rainbow">Regenbogen</option>
+<option value="custom">Eigene Farben</option>
+</select>
+<div class="checks">
+<label class="check">Dunkle Farbe <input id="animColor1" type="color" value="#06110b"></label>
+<label class="check">Helle Farbe <input id="animColor2" type="color" value="#b7ff6a"></label>
+</div>
+<div class="control-row"><label for="animTrail">Spurlänge</label><span class="value" id="animTrailV">55%</span></div><input id="animTrail" type="range" min="10" max="100" value="55">
+<div class="control-row"><label for="animMotion">Bewegungsweite</label><span class="value" id="animMotionV">50%</span></div><input id="animMotion" type="range" min="0" max="100" value="50">
+<div class="control-row"><label for="animContrast">Dither-Kontrast</label><span class="value" id="animContrastV">130%</span></div><input id="animContrast" type="range" min="50" max="220" value="130">
+<div class="control-row"><label for="animGlow">LCD-Leuchten</label><span class="value" id="animGlowV">45%</span></div><input id="animGlow" type="range" min="0" max="100" value="45">
+<div class="control-row"><label for="animCell">Symbolgröße</label><span class="value" id="animCellV">4 px</span></div><input id="animCell" type="range" min="3" max="14" value="4">
+<label for="animBackground">LCD-Hintergrund</label><input id="animBackground" type="color" value="#07120d" style="width:100%;height:38px;background:#c4cbd0;border:2px solid #8d979d;border-radius:8px;padding:3px">
+<div class="btnrow" style="margin-top:9px"><button class="btn" id="presetRadio">Y2K Chromatic Preset</button><button class="btn" id="randomPreset">Zufallslook</button><button class="btn" id="saveFrame">Frame als PNG</button></div>
+
+<div class="btnrow" style="margin-top:10px">
+<button class="btn" id="previewAnim">Animation ansehen</button>
+<button class="btn primary" id="makeGif">GIF erstellen</button>
+</div>
+<div class="btnrow" style="margin-top:8px">
+<button class="btn" id="stopAnim">Stoppen</button>
+<button class="btn" id="saveWebm">WebM exportieren</button>
+</div>
+<p style="color:var(--muted);font-size:12px;margin:10px 0 0">Feine Zeichenauflösung bis 3 px, GIF-Export bis 640 px, Y2K-Farblooks und Glitch-Effekte. Der GIF-Encoder benötigt beim ersten Start eine Internetverbindung; Fotos bleiben lokal.</p>
+<div id="gifStatus" role="status" style="font-size:12px;color:var(--accent2);margin-top:8px">Bereit für Animation</div>
+</section>
+
+<section class="panel">
+<h2>04 / Export</h2>
+<div class="btnrow"><button class="btn primary" id="download">PNG exportieren</button><button class="btn" id="downloadTxt">Text speichern</button></div>
+<p style="color:var(--muted);font-size:12px;margin:10px 0 0">Tipp: Bei Zeichen-Dither wird das fertige Bild gerendert. ASCII-Art kann zusätzlich als editierbare Textdatei gespeichert werden.</p>
+</section>
+</aside>
+<section class="workspace">
+<div class="toolbar"><div class="tabs"><button class="tab active" id="tabPreview">Vorschau</button><button class="tab" id="tabOriginal">Original</button><button class="tab" id="tabText">Textansicht</button></div><div class="btnrow"><button class="btn" id="copyText">ASCII kopieren</button></div></div>
+<div class="stage"><canvas id="canvas" width="900" height="600" style="display:none"></canvas><div class="ascii-wrap" id="asciiWrap"><pre id="asciiOut"></pre></div><div class="empty" id="empty"><div class="big">░▒▓█</div><strong>Dein nächstes Lieblingsbild wartet.</strong><span>Lade ein Foto hoch oder öffne die Demo. Dreh an den Reglern und entdecke deinen Dither-Stil.</span></div></div>
+<div class="status"><span id="status">Noch kein Bild geladen</span><span id="dimensions">Canvas bereit</span></div>
+
+<section class="panel" id="animPanel">
+<div class="toolbar"><div><h2 style="margin:0 0 4px">Animation Preview</h2><div style="font-size:12px;color:var(--muted)">Y2K-Glitch, Neonfarben und animierte Zeichen direkt auf deinem Bild.</div></div><span class="tag">LIVE FX</span></div>
+<div class="stage" style="min-height:220px;margin-top:12px"><canvas id="animCanvas" width="720" height="420" style="display:block;width:100%;max-height:52vh"></canvas></div>
+</section>
+
+</section>
+</main>
+<footer>Dither Lab · Y2K Collage Edition · Bildverarbeitung lokal im Browser. Deine Fotos werden nicht hochgeladen.</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), canvas=$('canvas'), ctx=canvas.getContext('2d',{willReadFrequently:true});
+let original=null, originalW=0, originalH=0, lastText='', view='preview', renderTimer=null;
+const controls=['scale','strength','threshold','contrast','brightness','levels'];
+controls.forEach(id=>$(id).addEventListener('input',()=>{$(id+'V').textContent=({scale:$('scale').value+' px',strength:$('strength').value+'%',threshold:$('threshold').value,contrast:$('contrast').value+'%',brightness:$('brightness').value,levels:$('levels').value})[id];schedule()}));
+['mode','palette','invert','edge','chars','charColor'].forEach(id=>$(id).addEventListener('input',schedule));
+$('file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{original=img;originalW=img.naturalWidth;originalH=img.naturalHeight;view='preview';showCanvas();render();URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f)});
+function showCanvas(){ $('empty').style.display='none';$('asciiWrap').style.display='none';canvas.style.display='block';$('tabPreview').classList.add('active');$('tabOriginal').classList.remove('active');$('tabText').classList.remove('active')}
+function schedule(){if(!original)return;clearTimeout(renderTimer);renderTimer=setTimeout(render,25)}
+function dims(){let maxW=1200,maxH=1000,s=Math.min(1,maxW/originalW,maxH/originalH);return [Math.max(1,Math.round(originalW*s)),Math.max(1,Math.round(originalH*s))]}
+function lum(r,g,b){return .2126*r+.7152*g+.0722*b}
+function paletteColor(l,r,g,b){let p=$('palette').value;if(p==='color')return [r,g,b];if(p==='green')return [Math.round(l*.55),Math.round(l),Math.round(l*.42)];if(p==='amber')return [Math.round(l),Math.round(l*.62),Math.round(l*.18)];if(p==='cyan')return [Math.round(l*.35),Math.round(l*.9),Math.round(l)];if(p==='duo')return l>127?[245,226,179]:[34,50,44];return [l,l,l]}
+function render(){
+ if(!original)return;const [w,h]=dims();const scale=+$('scale').value, mode=$('mode').value, strength=+$('strength').value/100, threshold=+$('threshold').value, contrast=+$('contrast').value/100, brightness=+$('brightness').value, levels=+$('levels').value, invert=$('invert').checked;
+ const small=document.createElement('canvas'), sw=Math.max(1,Math.ceil(w/scale)), sh=Math.max(1,Math.ceil(h/scale));small.width=sw;small.height=sh;const sctx=small.getContext('2d',{willReadFrequently:true});sctx.drawImage(original,0,0,sw,sh);let im=sctx.getImageData(0,0,sw,sh),d=im.data, L=new Float32Array(sw*sh);
+ for(let i=0;i<d.length;i+=4){let l=lum(d[i],d[i+1],d[i+2]);l=(l-127.5)*contrast+127.5+brightness;if(invert)l=255-l;L[i/4]=Math.max(0,Math.min(255,l))}
+ if(mode==='floyd'||mode==='atkinson'){let a=L;for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let i=y*sw+x,old=a[i],n=old<threshold?0:255,err=(old-n)*strength;a[i]=n;if(mode==='floyd'){spread(a,sw,sh,x+1,y,err*7/16);spread(a,sw,sh,x-1,y+1,err*3/16);spread(a,sw,sh,x,y+1,err*5/16);spread(a,sw,sh,x+1,y+1,err/16)}else{spread(a,sw,sh,x+1,y,err/8);spread(a,sw,sh,x+2,y,err/8);spread(a,sw,sh,x-1,y+1,err/8);spread(a,sw,sh,x,y+1,err/8);spread(a,sw,sh,x+1,y+1,err/8);spread(a,sw,sh,x,y+2,err/8)}}}
+ const bayer=[[0,48,12,60,3,51,15,63],[32,16,44,28,35,19,47,31],[8,56,4,52,11,59,7,55],[40,24,36,20,43,27,39,23],[2,50,14,62,1,49,13,61],[34,18,46,30,33,17,45,29],[10,58,6,54,9,57,5,53],[42,26,38,22,41,25,37,21]];
+ if(mode==='ordered'){for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let i=y*sw+x;L[i]=L[i]>(bayer[y%8][x%8]-31.5)*strength*2+threshold-127?255:0}}
+ if(mode==='threshold'){for(let i=0;i<L.length;i++)L[i]=L[i]<threshold?0:255}
+ if(mode==='poster'){for(let i=0;i<L.length;i++)L[i]=Math.round(L[i]/255*(levels-1))*255/(levels-1)}
+ if(mode==='halftone'){for(let y=0;y<sh;y++)for(let x=0;x<sw;x++){let i=y*sw+x;let v=L[i]/255;let pattern=((x%4)-1.5)**2+((y%4)-1.5)**2;L[i]=v*255>threshold+((pattern-2.5)*12/Math.max(.1,strength))?255:0}}
+ let colors=new Uint8ClampedArray(sw*sh*4);
+ for(let i=0;i<L.length;i++){let l=Math.max(0,Math.min(255,L[i]));if(mode==='chars'||mode==='ascii'){let n=Math.max(2,($('chars').value||'@%#*+=-:. ').length);l=Math.round(l/255*(n-1))*255/(n-1)}let [r,g,b]=paletteColor(l,d[i*4],d[i*4+1],d[i*4+2]);colors[i*4]=r;colors[i*4+1]=g;colors[i*4+2]=b;colors[i*4+3]=255}
+ const out=document.createElement('canvas');out.width=w;out.height=h;const octx=out.getContext('2d');const oi=octx.createImageData(sw,sh);oi.data.set(colors);sctx.putImageData(oi,0,0);octx.imageSmoothingEnabled=false;octx.drawImage(small,0,0,sw,sh,0,0,w,h);
+ // Optional simple edge emphasis
+ if($('edge').checked){octx.globalAlpha=.2;octx.filter='contrast(180%)';octx.drawImage(out,0,0);octx.filter='none';octx.globalAlpha=1}
+ if(mode==='chars'||mode==='ascii'){
+   const chars=[...($('chars').value||'@%#*+=-:. ')];let txt='', stepX= mode==='ascii'?Math.max(1,Math.round(scale*.65)):1, stepY=mode==='ascii'?Math.max(1,Math.round(scale*1.15)):1;
+   // Generate glyph mosaic from the processed luminance field.
+   const cw=Math.max(1,Math.floor(sw/(mode==='ascii'?1:1))), ch=sh; const maxCols=Math.min(260,Math.max(20,Math.floor(w/(mode==='ascii'?Math.max(4,scale*2):Math.max(4,scale*.75))))), maxRows=Math.max(1,Math.floor(maxCols*h/w));
+   const sample=document.createElement('canvas');sample.width=maxCols;sample.height=maxRows;const q=sample.getContext('2d',{willReadFrequently:true});q.drawImage(original,0,0,maxCols,maxRows);const qd=q.getImageData(0,0,maxCols,maxRows).data;
+   const fg=$('charColor').value;let html='';for(let y=0;y<maxRows;y++){for(let x=0;x<maxCols;x++){let k=(y*maxCols+x)*4,l=lum(qd[k],qd[k+1],qd[k+2]);l=(l-127.5)*contrast+127.5+brightness;if(invert)l=255-l;let idx=Math.max(0,Math.min(chars.length-1,Math.round(l/255*(chars.length-1))));let c=chars[idx]||' ';txt+=c;let col=fg==='white'?'#fff':fg==='green'?'#9dff91':fg==='amber'?'#ffbd62':fg==='cyan'?'#70f6f4':fg==='rainbow'?`hsl(${180-l*.65} 90% 65%)`:(['green','amber','cyan'].includes($('palette').value)?paletteColor(l,l,l,l).map(v=>v.toString(16).padStart(2,'0')).join(''):'#e6f4e8');if(!col.startsWith('#')||col.length!==7){if(col.length===6)col='#'+col;else col='#e6f4e8'}html+=`<span style="color:${col}">${escapeHtml(c)}</span>`}txt+='\n';html+='\n'}lastText=txt;$('asciiOut').innerHTML=html;$('asciiWrap').style.display='block';canvas.style.display='none';$('tabText').classList.add('active');$('tabPreview').classList.remove('active');$('tabOriginal').classList.remove('active');canvas.width=w;canvas.height=h;ctx.clearRect(0,0,w,h);ctx.drawImage(out,0,0); 
+ } else {lastText='';canvas.width=w;canvas.height=h;ctx.clearRect(0,0,w,h);ctx.drawImage(out,0,0);if(view==='text')view='preview';showCanvas()}
+ $('status').textContent=mode==='chars'||mode==='ascii'?'Zeichenmosaik gerendert':`Verfahren: ${$('mode').selectedOptions[0].text}`;$('dimensions').textContent=`${originalW} × ${originalH} px · Ausgabe ${w} × ${h} px`;
+ if(view==='original'){ctx.clearRect(0,0,w,h);ctx.drawImage(original,0,0,w,h);canvas.style.display='block';$('asciiWrap').style.display='none';$('tabOriginal').classList.add('active');$('tabPreview').classList.remove('active');$('tabText').classList.remove('active')}
+}
+function spread(a,w,h,x,y,v){if(x>=0&&x<w&&y>=0&&y<h)a[y*w+x]+=v}
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+$('tabPreview').onclick=()=>{view='preview';if(original)render();else showCanvas()};
+$('tabOriginal').onclick=()=>{if(!original)return;view='original';const [w,h]=dims();canvas.width=w;canvas.height=h;ctx.drawImage(original,0,0,w,h);canvas.style.display='block';$('asciiWrap').style.display='none';$('empty').style.display='none';$('tabOriginal').classList.add('active');$('tabPreview').classList.remove('active');$('tabText').classList.remove('active')};
+$('tabText').onclick=()=>{if(!original)return;if(!lastText)render();canvas.style.display='none';$('asciiWrap').style.display='block';$('empty').style.display='none';$('tabText').classList.add('active');$('tabPreview').classList.remove('active');$('tabOriginal').classList.remove('active');view='text'};
+$('download').onclick=()=>{if(!original)return;const a=document.createElement('a');a.download='dither-lab.png';a.href=canvas.toDataURL('image/png');a.click()};
+$('downloadTxt').onclick=()=>{if(!lastText){alert('Wähle zuerst Zeichen-Dither oder ASCII-Art.');return}const a=document.createElement('a');a.download='dither-art.txt';a.href=URL.createObjectURL(new Blob([lastText],{type:'text/plain;charset=utf-8'}));a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('copyText').onclick=async()=>{if(!lastText){alert('Wähle zuerst Zeichen-Dither oder ASCII-Art.');return}try{await navigator.clipboard.writeText(lastText);$('status').textContent='ASCII-Text in die Zwischenablage kopiert'}catch(e){const ta=document.createElement('textarea');ta.value=lastText;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}};
+$('reset').onclick=()=>{controls.forEach(id=>{const el=$(id);el.value=({scale:5,strength:100,threshold:128,contrast:100,brightness:0,levels:4})[id];el.dispatchEvent(new Event('input'))});$('mode').value='floyd';$('palette').value='mono';$('invert').checked=false;$('edge').checked=false;$('chars').value='@%#*+=-:. ';$('charColor').value='palette';schedule()};
+$('presetAscii').onclick=()=>{$('chars').value='@%#*+=-:. ';schedule()};$('presetBlocks').onclick=()=>{$('chars').value='█▓▒░ ';schedule()};$('presetSymbols').onclick=()=>{$('chars').value='@◉●◍○· ';schedule()};
+$('sample').onclick=()=>{const c=document.createElement('canvas');c.width=900;c.height=600;const x=c.getContext('2d');let g=x.createLinearGradient(0,0,900,600);g.addColorStop(0,'#d9f3be');g.addColorStop(.45,'#527c6c');g.addColorStop(1,'#14221e');x.fillStyle=g;x.fillRect(0,0,900,600);x.fillStyle='#f1e9ce';x.beginPath();x.arc(450,255,125,0,Math.PI*2);x.fill();x.fillStyle='#1c3028';x.beginPath();x.arc(450,255,95,0,Math.PI*2);x.fill();x.fillStyle='#d5f4a4';x.fillRect(0,420,900,180);x.fillStyle='#1c3028';for(let i=0;i<11;i++){x.beginPath();x.moveTo(i*95,420);x.lineTo(i*95+45,330-(i%4)*24);x.lineTo(i*95+85,420);x.fill()}x.fillStyle='#eff8e8';x.font='bold 50px monospace';x.fillText('DITHER LAB',35,80);const img=new Image();img.onload=()=>{original=img;originalW=900;originalH=600;view='preview';render()};img.src=c.toDataURL()};
+
+// Animated effects and exports
+const animCanvas=$('animCanvas'), animCtx=animCanvas.getContext('2d');
+let animRAF=0, animStart=0, animPlaying=false, mediaRecorder=null, mediaChunks=[];
+const glyphs='01アイウエオカキクケコサシスセソタチツテトナニヌネノ@#$%&*+=<>░▒▓█';
+$('animSpeed').addEventListener('input',()=>{$('animSpeedV').textContent=(+$('animSpeed').value/5).toFixed(1)+'×'});
+$('animFrames').addEventListener('input',()=>{$('animFramesV').textContent=$('animFrames').value+' s'});
+$('animDensity').addEventListener('input',()=>{$('animDensityV').textContent=['sehr grob','grob','locker','mittel-grob','mittel','mittel-fein','fein','sehr fein','ultrafein','maximal'][+$('animDensity').value-1]});
+$('animCell').addEventListener('input',()=>{$('animCellV').textContent=$('animCell').value+' px'});
+$('animContrast').addEventListener('input',()=>{$('animContrastV').textContent=$('animContrast').value+'%'});
+$('animGlow').addEventListener('input',()=>{$('animGlowV').textContent=$('animGlow').value+'%'});
+$('animTrail').addEventListener('input',()=>{$('animTrailV').textContent=$('animTrail').value+'%'});
+$('animMotion').addEventListener('input',()=>{$('animMotionV').textContent=$('animMotion').value+'%'});
+['symbolPattern','animPalette','animColor1','animColor2','animTrail','animMotion','animContrast','animGlow','animCell','animBackground'].forEach(id=>$(id).addEventListener('input',()=>{if(animPlaying)drawAnimFrame(performance.now()-animStart,animCanvas)}));
+
+function drawAnimFrame(t, target=animCanvas){
+ const c=target, x=c.getContext('2d'), w=c.width, h=c.height;
+ const effect=$('animEffect').value, speed=(+$('animSpeed').value)/5, density=+$('animDensity').value;
+ const seq=[...($('chars').value||'█▓▒░@#$%.* ')], pattern=$('symbolPattern').value, palette=$('animPalette').value;
+ const cell=Math.max(3,+$('animCell').value || (22-density*1.8)), cols=Math.ceil(w/cell), rows=Math.ceil(h/cell);
+ const trailLen=(+$('animTrail').value)/100, motion=(+$('animMotion').value)/100;
+ x.fillStyle=$('animBackground')?.value||'#050a0b';x.fillRect(0,0,w,h);
+ if(!original){x.fillStyle='#b7f36b';x.font='16px monospace';x.fillText('Upload a photo to animate its dither symbols',14,30);return}
+ const sample=document.createElement('canvas');sample.width=cols;sample.height=rows;
+ const q=sample.getContext('2d',{willReadFrequently:true});q.drawImage(original,0,0,cols,rows);
+ const pixels=q.getImageData(0,0,cols,rows).data, lumGrid=new Float32Array(cols*rows);
+ for(let i=0;i<lumGrid.length;i++){const p=i*4;lumGrid[i]=(.2126*pixels[p]+.7152*pixels[p+1]+.0722*pixels[p+2])/255}
+ const clamp=v=>Math.max(0,Math.min(1,v));
+ const contrast=(+$('animContrast').value||100)/100, glow=(+$('animGlow').value||0)/100;
+ for(let i=0;i<lumGrid.length;i++)lumGrid[i]=clamp((lumGrid[i]-.5)*contrast+.5);
+ const pick=(l,col,row)=>{
+   let n=Math.round(clamp(l)*(seq.length-1));
+   if(pattern==='reverse')n=seq.length-1-n;
+   if(pattern==='checker'&&((col+row)%2))n=seq.length-1-n;
+   if(pattern==='stripes'&&(row%4<2))n=seq.length-1-n;
+   if(pattern==='random')n=(n+Math.floor((col*19+row*7+t*.04*speed)%seq.length))%seq.length;
+   if(pattern==='blocks'){const block=[...'█▓▒░'];return block[Math.max(0,Math.min(3,Math.round((1-l)*3)))]}
+   if(pattern==='alternate'&&((col+row)%2))n=(n+Math.floor(seq.length/2))%seq.length;
+   return seq[Math.max(0,Math.min(seq.length-1,n))]||' ';
+ };
+ const hexRgb=hex=>{const v=parseInt(hex.slice(1),16);return [(v>>16)&255,(v>>8)&255,v&255]};
+ const c1=hexRgb($('animColor1').value),c2=hexRgb($('animColor2').value);
+ const color=(l,col,row)=>{
+   l=clamp(l);
+   if(palette==='rainbow'||effect==='rainbow')return `hsl(${(l*250+col*2+row+t*.08*speed)%360} 95% ${28+l*45}%)`;
+   if(palette==='fire'||effect==='fire')return `hsl(${Math.max(0,45-l*45+Math.sin(t*.01+col)*8)} 100% ${18+l*48}%)`;
+   if(palette==='ice')return `hsl(${190+l*35} 90% ${20+l*55}%)`;
+   if(palette==='cyber')return `hsl(${(l>.5?300:180)+Math.sin(t*.004+row)*15} 95% ${22+l*50}%)`;
+   if(palette==='mono')return `rgb(${Math.round(l*255)},${Math.round(l*255)},${Math.round(l*255)})`;
+   if(palette==='custom')return `rgb(${Math.round(c1[0]+(c2[0]-c1[0])*l)},${Math.round(c1[1]+(c2[1]-c1[1])*l)},${Math.round(c1[2]+(c2[2]-c1[2])*l)})`;
+   return `rgb(${Math.round(20+l*50)},${Math.round(70+l*185)},${Math.round(30+l*70)})`;
+ };
+ x.font=`${cell}px monospace`;x.textAlign='center';x.textBaseline='middle';
+ for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+   let l=lumGrid[row*cols+col], xx=col*cell+cell/2, yy=row*cell+cell/2;
+   let dx=0,dy=0,skip=false,alpha=.25+l*.75, val=l;
+   const phase=t*.004*speed, wave=Math.sin(col*.23+phase+row*.12);
+   switch(effect){
+    case 'matrix': case 'asciiRain': {
+      const head=((col*37+t*.055*speed)%(rows+12))-6, fall=(row-head+rows+12)%(rows+12), trail=Math.max(5,Math.floor(rows*trailLen));
+      if(effect==='matrix'&&fall>trail&&l<.12)skip=true;
+      if(effect==='asciiRain'&&fall>trail*.65&&l<.06)skip=true;
+      alpha=fall<1?1:Math.max(.08,1-fall/trail);break;
+    }
+    case 'glyphwave': dy=wave*cell*1.7*motion;val=clamp(l+Math.abs(wave)*.15);break;
+    case 'glitch': dx=(Math.sin(t*.03*speed+row*3)>.35?Math.sin(t*.03*speed+row*3)*cell*2*motion:0);alpha=.4+l*.6;break;
+    case 'scan': {const scanY=(t*speed*.16)%(rows+1),glow=Math.max(0,1-Math.abs(row-scanY)/3);val=clamp(l+glow*.45);alpha=.25+l*.7+glow*.3;break}
+    case 'pulse': {const pulse=.55+.45*Math.sin(t*.004*speed);val=clamp((l-.5)*(.8+pulse*2)+.5);alpha=.35+l*.65;break}
+    case 'invert': if(Math.sin(t*.01*speed)>0)val=1-l;break;
+    case 'spiral': {const cx=cols/2,cy=rows/2,dist=Math.hypot(col-cx,row-cy),ang=Math.atan2(row-cy,col-cx);const twist=Math.sin(dist*.3-ang*2-phase*2);val=clamp(l+twist*.35);dx=Math.cos(ang+phase)*dist*.06*cell*motion;dy=Math.sin(ang+phase)*dist*.06*cell*motion;break}
+    case 'orbit': {const cx=cols/2,cy=rows/2,ang=Math.atan2(row-cy,col-cx),dist=Math.hypot(col-cx,row-cy);val=clamp(l+Math.sin(ang*3+phase*2+dist*.1)*.22);dx=Math.cos(ang+phase)*cell*motion;dy=Math.sin(ang+phase)*cell*motion;break}
+    case 'fire': {val=clamp(l+Math.max(0,Math.sin(col*.5+t*.02*speed+row*.35))*.3);dy=-Math.abs(Math.sin(col*.4+t*.012*speed+row)) * cell*motion;break}
+    case 'rainbow': val=clamp(l+wave*.18);dy=wave*cell*motion;break;
+    case 'mirror': {const mirrored=col<cols/2?col:cols-1-col; l=lumGrid[row*cols+mirrored];val=clamp(l+Math.sin(t*.005*speed+row*.2)*.12);if(Math.sin(t*.003*speed)>0)dx=(col<cols/2?1:-1)*Math.abs(wave)*cell*motion;break}
+    case 'typing': {const reveal=(t*.035*speed)% (cols*rows);if(row*cols+col>reveal)skip=true;break}
+   }
+   if(skip)continue;
+   x.globalAlpha=clamp(alpha);x.shadowBlur=glow*8;x.shadowColor=color(val,col,row);x.fillStyle=color(val,col,row);x.fillText(pick(val,col,row),xx+dx,yy+dy);
+   if((effect==='matrix'||effect==='asciiRain')&&row===0){x.fillStyle='#f5ffdf';x.globalAlpha=1;x.fillText(pick(val,col,row),xx,yy)}
+ }
+ x.globalAlpha=1;x.shadowBlur=0;
+ if(effect==='glitch'||effect==='typing'){x.fillStyle=color(.95,0,0);x.font='bold 12px monospace';x.textAlign='left';x.fillText(effect==='glitch'?'SIGNAL // '+Math.floor(t/80).toString(16).toUpperCase():'> rendering_symbols.exe',10,h-10)}
+ if(effect==='scan'){x.fillStyle='rgba(0,0,0,.22)';for(let yy=0;yy<h;yy+=4)x.fillRect(0,yy,w,1.5)}
+}
+function animateLoop(now){if(!animPlaying)return;if(!animStart)animStart=now;drawAnimFrame((now-animStart),animCanvas);animRAF=requestAnimationFrame(animateLoop)}
+function startAnimation(){if(!original){$('gifStatus').textContent='Bitte zuerst ein Foto hochladen oder Demo laden.';return}cancelAnimationFrame(animRAF);animPlaying=true;animStart=0;animRAF=requestAnimationFrame(animateLoop);$('gifStatus').textContent='Animation läuft …'}
+$('previewAnim').onclick=startAnimation;
+$('presetRadio').onclick=()=>{$('animEffect').value='matrix';$('animPalette').value='matrix';$('symbolPattern').value='brightness';$('animColor1').value='#06110b';$('animColor2').value='#b7ff6a';$('animBackground').value='#06110b';$('animDensity').value=10;$('animCell').value=3;$('animSpeed').value=5;$('animTrail').value=65;$('animMotion').value=55;$('animContrast').value=145;$('animGlow').value=65;['animDensity','animCell','animSpeed','animTrail','animMotion','animContrast','animGlow'].forEach(id=>$(id).dispatchEvent(new Event('input')));if(animPlaying)drawAnimFrame(performance.now()-animStart,animCanvas);$('gifStatus').textContent='Y2K Chromatic Preset geladen.'};
+$('randomPreset').onclick=()=>{const choose=(id)=>{const el=$(id);el.selectedIndex=Math.floor(Math.random()*el.options.length)};choose('animEffect');choose('symbolPattern');choose('animPalette');$('animSpeed').value=1+Math.floor(Math.random()*10);$('animDensity').value=6+Math.floor(Math.random()*5);$('animCell').value=3+Math.floor(Math.random()*5);$('animTrail').value=20+Math.floor(Math.random()*81);$('animMotion').value=Math.floor(Math.random()*101);$('animContrast').value=80+Math.floor(Math.random()*121);$('animGlow').value=Math.floor(Math.random()*101);['animSpeed','animDensity','animCell','animTrail','animMotion','animContrast','animGlow'].forEach(id=>$(id).dispatchEvent(new Event('input')));if(animPlaying)drawAnimFrame(performance.now()-animStart,animCanvas);$('gifStatus').textContent='Zufälliger Look erstellt.'};
+$('saveFrame').onclick=()=>{const a=document.createElement('a');a.download='dither-animation-frame.png';a.href=animCanvas.toDataURL('image/png');a.click()};
+$('stopAnim').onclick=()=>{animPlaying=false;cancelAnimationFrame(animRAF);$('gifStatus').textContent='Animation gestoppt'};
+$('makeGif').onclick=async()=>{
+ if(!original){$('gifStatus').textContent='Bitte zuerst ein Foto hochladen oder Demo laden.';return}
+ if(typeof GIF==='undefined'){$('gifStatus').textContent='GIF-Encoder nicht geladen. Prüfe deine Internetverbindung und lade die Seite neu.';return}
+ $('makeGif').disabled=true;$('gifStatus').textContent='GIF wird gerendert …';
+ try{
+   const w=640,h=Math.max(240,Math.round(640*originalH/originalW));const fc=document.createElement('canvas');fc.width=w;fc.height=h;
+   const gif=new GIF({workers:2,quality:8,width:w,height:h,workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',repeat:0});
+   const count=(+$('animFrames').value)*8, speed=(+$('animSpeed').value)/5;
+   for(let i=0;i<count;i++){drawAnimFrame(i*125*speed,fc);gif.addFrame(fc.getContext('2d'),{copy:true,delay:125})}
+   gif.on('progress',p=>$('gifStatus').textContent='GIF wird erstellt: '+Math.round(p*100)+'%');
+   gif.on('finished',blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dither-animation.gif';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);$('gifStatus').textContent='GIF fertig! Animation wurde heruntergeladen.';$('makeGif').disabled=false});
+   gif.on('abort',()=>{$('gifStatus').textContent='GIF-Erstellung abgebrochen.';$('makeGif').disabled=false});
+   gif.render();
+ }catch(e){$('gifStatus').textContent='GIF-Export fehlgeschlagen: '+e.message;$('makeGif').disabled=false}
+};
+$('saveWebm').onclick=()=>{
+ if(!original){$('gifStatus').textContent='Bitte zuerst ein Foto hochladen oder Demo laden.';return}
+ if(!window.MediaRecorder||!animCanvas.captureStream){$('gifStatus').textContent='WebM-Aufnahme wird von diesem Browser nicht unterstützt.';return}
+ startAnimation();const stream=animCanvas.captureStream(20);mediaChunks=[];
+ let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
+ try{mediaRecorder=new MediaRecorder(stream,{mimeType:mime})}catch(e){$('gifStatus').textContent='Videoaufnahme nicht verfügbar.';return}
+ mediaRecorder.ondataavailable=e=>{if(e.data.size)mediaChunks.push(e.data)};
+ mediaRecorder.onstop=()=>{const blob=new Blob(mediaChunks,{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dither-animation.webm';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);stream.getTracks().forEach(t=>t.stop());$('gifStatus').textContent='WebM-Video gespeichert.'};
+ mediaRecorder.start();$('gifStatus').textContent='WebM-Aufnahme läuft …';
+ setTimeout(()=>{if(mediaRecorder&&mediaRecorder.state==='recording'){mediaRecorder.stop();animPlaying=false;cancelAnimationFrame(animRAF)}},(+$('animFrames').value)*1000);
+};
+
+})();
+</script>
+</body>
+</html>
